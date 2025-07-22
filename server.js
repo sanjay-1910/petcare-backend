@@ -27,7 +27,10 @@ app.get('/', (req, res) => {
 
 //bhknjkm,
 app.use(cors({
-    origin: "http://localhost:5500", // or wherever your frontend is hosted
+    origin:[ "http://localhost:5500", 
+     "https://petcare-frontend-psi.vercel.app", 
+    "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
+    "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app" ],
     credentials: true
 }));
 
