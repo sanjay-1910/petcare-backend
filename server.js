@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const session = require("express-session");
 //11-15
+const MySQLStore = require('express-mysql-session')(session);
 
 
 const app = express();
@@ -17,6 +18,12 @@ const port = 5002;
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+});
 
 //bhknjkm,
 app.use(cors({
@@ -27,19 +34,19 @@ app.use(cors({
 //lkjohi
 
 
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Set up session
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET || "mysecret",
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false }, // Change to true if using HTTPS
-    })
-);
+// app.use(
+//     session({
+//         secret: process.env.SESSION_SECRET || "mysecret",
+//         resave: false,
+//         saveUninitialized: true,
+//         cookie: { secure: false }, // Change to true if using HTTPS
+//     })
+// );
 
 app.use(express.json());//vetfinder
 app.use(express.static(path.join(__dirname, "public")));
@@ -56,16 +63,38 @@ const db = mysql.createPool({
     queueLimit: 0,
 });
 
+const dbOptions = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+};
 
-(async () => {
+const sessionStore = new MySQLStore(dbOptions);
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'mysecret',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'  
+  }
+}));
+
+
+// ✅ Periodic keep-alive to prevent idle timeout (ECONNRESET-safe)
+setInterval(async () => {
     try {
-        const connection = await db.getConnection();
-        console.log("✅ Connected to MySQL database");
-        connection.release();
+        await db.query('SELECT 1');
+        console.log('✅ DB keep-alive ping successful');
     } catch (err) {
-        console.error("Database connection failed:", err.message);
+        console.error('❌ DB keep-alive ping failed:', err.message);
     }
-})();
+}, 5 * 60 * 1000); // every 5 minutes
+
 
 // ✅ User Registration (Async/Await)
 app.post("/register", async (req, res) => {
