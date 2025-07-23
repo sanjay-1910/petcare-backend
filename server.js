@@ -35,21 +35,12 @@ app.use(cors({
 }));
 
 //lkjohi
-
+app.set('trust proxy', 1); 
 
 // app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
-// Set up session
-// app.use(
-//     session({
-//         secret: process.env.SESSION_SECRET || "mysecret",
-//         resave: false,
-//         saveUninitialized: true,
-//         cookie: { secure: false }, // Change to true if using HTTPS
-//     })
-// );
 
 app.use(express.json());//vetfinder
 app.use(express.static(path.join(__dirname, "public")));
@@ -70,7 +61,8 @@ const dbOptions = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  database: process.env.DB_NAME,
+  port: 3306
 };
 
 const sessionStore = new MySQLStore(dbOptions);
@@ -81,9 +73,11 @@ app.use(session({
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
+    httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'  
+    // secure: process.env.NODE_ENV === 'production',
+    secure:true,
+    sameSite: 'none'  
   }
 }));
 
@@ -147,7 +141,8 @@ app.post("/login", async (req, res) => {
         }
 
         const user = results[0];
-        req.session.user_id = results[0].id;
+        // req.session.user_id = results[0].id;
+        // req.session.userId = user.id;
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: "Incorrect password" });
@@ -341,7 +336,7 @@ app.get("/user/:id", async (req, res) => {
 
 
 app.post('/api/schedule-vaccine', (req, res) => {
-    const user_id = req.session.user_id;
+    const user_id = req.session.userId;
     // const { user_id, pet_type, vaccine_name, appointment_date, appointment_time } = req.body;
     console.log(user_id);
     const {pet_type, vaccine_name, appointment_date, appointment_time } = req.body;
@@ -361,7 +356,6 @@ app.post('/api/schedule-vaccine', (req, res) => {
         res.json({ success: true, message: 'Vaccine appointment scheduled successfully' });
     });
 });
-
 
 // ✅ Logout Route
 app.post("/logout", (req, res) => {
@@ -385,3 +379,14 @@ app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
     
 });
+
+
+// Set up session
+// app.use(
+//     session({
+//         secret: process.env.SESSION_SECRET || "mysecret",
+//         resave: false,
+//         saveUninitialized: true,
+//         cookie: { secure: false }, // Change to true if using HTTPS
+//     })
+// );
