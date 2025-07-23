@@ -26,7 +26,10 @@ app.use(cors({
     "http://localhost:5500",
     "https://petcare-frontend-psi.vercel.app",
     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
-    "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app"
+    "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app",
+    "https://petcare-frontend-pynala-sanjays-projects.vercel.app",
+    "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
+    "https://petcare-frontend-bu6932vxa-pynala-sanjays-projects.vercel.app"
   ],
   credentials: false
 }));
