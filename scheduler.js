@@ -25,30 +25,12 @@ const transporter = nodemailer.createTransport({
 });
 
 // Cron job: every 3 minutes
-cron.schedule('0 21 * * 1', () => {
-  const now = moment();
-  const nextWeek = moment().add(7, 'days');
-
-  const start = now.format('YYYY-MM-DD HH:mm:ss');
-  const end = nextWeek.format('YYYY-MM-DD HH:mm:ss');
-
-  const query = `
-    SELECT v.user_id, v.vaccine_name, v.appointment_date, v.appointment_time,
-           u.email, u.name
-    FROM user_vaccine_schedule v
-    JOIN users u ON v.user_id = u.id
-    WHERE CONCAT(v.appointment_date, ' ', v.appointment_time)
-          BETWEEN ? AND ?
-  `;
-
-
-
-// cron.schedule('*/3 * * * *', () => {
+// cron.schedule('0 21 * * 1', () => {
 //   const now = moment();
-//   const next3Hours = moment().add(3, 'hours');
+//   const nextWeek = moment().add(7, 'days');
 
 //   const start = now.format('YYYY-MM-DD HH:mm:ss');
-//   const end = next3Hours.format('YYYY-MM-DD HH:mm:ss');
+//   const end = nextWeek.format('YYYY-MM-DD HH:mm:ss');
 
 //   const query = `
 //     SELECT v.user_id, v.vaccine_name, v.appointment_date, v.appointment_time,
@@ -58,6 +40,24 @@ cron.schedule('0 21 * * 1', () => {
 //     WHERE CONCAT(v.appointment_date, ' ', v.appointment_time)
 //           BETWEEN ? AND ?
 //   `;
+
+
+
+cron.schedule('*/3 * * * *', () => {
+  const now = moment();
+  const next3Hours = moment().add(3, 'hours');
+
+  const start = now.format('YYYY-MM-DD HH:mm:ss');
+  const end = next3Hours.format('YYYY-MM-DD HH:mm:ss');
+
+  const query = `
+    SELECT v.user_id, v.vaccine_name, v.appointment_date, v.appointment_time,
+           u.email, u.name
+    FROM user_vaccine_schedule v
+    JOIN users u ON v.user_id = u.id
+    WHERE CONCAT(v.appointment_date, ' ', v.appointment_time)
+          BETWEEN ? AND ?
+  `;
 
   // Execute your DB query here using start and end
 
