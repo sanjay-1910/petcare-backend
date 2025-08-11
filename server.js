@@ -113,26 +113,6 @@ app.post("/register", async (req, res) => {
 });
 
 
-// 🔐 Login
-// app.post("/login", async (req, res) => {
-//   const { username, password } = req.body;
-//   if (!username || !password) return res.status(400).json({ message: "All fields are required" });
-
-//   try {
-//     const [results] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
-//     if (results.length === 0) return res.status(401).json({ message: "User not found" });
-
-//     const user = results[0];
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
-
-//     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "default_secret", { expiresIn: "1h" });
-//     res.status(200).json({ message: "Login successful", token, userId: user.id });
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ message: "Database error" });
-//   }
-// });
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -184,19 +164,6 @@ app.post("/logout", (req, res) => {
 });
 
 
-// ✅ Update Profile
-// app.post("/updateProfile", authenticateToken, async (req, res) => {
-//   const userId = req.user.id;
-//   const { name, email, profile_picture } = req.body;
-
-//   try {
-//     await db.query("UPDATE users SET name = ?, email = ?, profile_picture = ? WHERE id = ?", [name, email, profile_picture, userId]);
-//     res.json({ success: true, message: "Profile updated successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Database update failed" });
-//   }
-// });
 
 
 app.post("/updateProfile", authenticateToken, async (req, res) => {
@@ -217,84 +184,7 @@ app.post("/updateProfile", authenticateToken, async (req, res) => {
 });
 
 
-// // ✅ Update Profile Picture
-// app.post("/updateProfilePicture", authenticateToken, upload.single("profile_picture"), async (req, res) => {
-//   const userId = req.user.id;
-//   if (!req.file) return res.status(400).json({ success: false, message: "Invalid data" });
 
-//   try {
-//     await db.query("UPDATE users SET profile_picture = ? WHERE id = ?", [req.file.buffer, userId]);
-//     res.json({ success: true, message: "Profile picture updated successfully!" });
-//   } catch (error) {
-//     console.error("Database error:", error);
-//     res.status(500).json({ success: false, message: "Database update failed" });
-//   }
-// });
-
-// // ✅ Get Profile Picture
-// app.get("/profilePicture/:userId", async (req, res) => {
-//   const { userId } = req.params;
-//   try {
-//     const [result] = await db.query("SELECT profile_picture FROM users WHERE id = ?", [userId]);
-//     if (!result.length || !result[0].profile_picture) return res.status(404).json({ message: "No profile picture found" });
-
-//     res.setHeader("Content-Type", "image/png");
-//     res.send(result[0].profile_picture);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error retrieving profile picture" });
-//   }
-// });
-
-// // ✅ Save Pet Profile
-// app.post("/savePetProfile", authenticateToken, async (req, res) => {
-//   const userId = req.user.id;
-//   const { pet_name, pet_type, pet_breed, pet_age, pet_weight } = req.body;
-
-//   try {
-//     await db.query("INSERT INTO pets (user_id, pet_name, pet_type, pet_breed, pet_age, pet_weight) VALUES (?, ?, ?, ?, ?, ?)", [userId, pet_name, pet_type, pet_breed, pet_age, pet_weight]);
-//     res.json({ success: true, message: "Pet profile saved successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Failed to save pet profile" });
-//   }
-// });
-
-// // ✅ Get User + Pet Details
-// app.get("/user/:id", async (req, res) => {
-//   const userId = req.params.id;
-//   try {
-//     const [userRows] = await db.query("SELECT * FROM users WHERE id = ?", [userId]);
-//     const [petRows] = await db.query("SELECT * FROM pets WHERE user_id = ? ORDER BY id DESC LIMIT 1", [userId]);
-//     if (!userRows.length) return res.status(404).json({ message: "User not found" });
-
-//     res.status(200).json({ user: userRows[0], pets: petRows });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
-
-// // ✅ Vaccine Appointment
-// app.post('/api/schedule-vaccine', authenticateToken, (req, res) => {
-//   const userId = req.user.id;
-//   const { pet_type, vaccine_name, appointment_date, appointment_time } = req.body;
-
-//   if (!pet_type || !vaccine_name || !appointment_date || !appointment_time) {
-//     return res.status(400).json({ success: false, message: 'Missing required fields.' });
-//   }
-
-//   const sql = `INSERT INTO user_vaccine_schedule (user_id, pet_type, vaccine_name, appointment_date, appointment_time)
-//                VALUES (?, ?, ?, ?, ?)`;
-
-//   db.query(sql, [userId, pet_type, vaccine_name, appointment_date, appointment_time], (err) => {
-//     if (err) {
-//       console.error('Database insert error:', err.message);
-//       return res.status(500).json({ success: false, message: 'Database error' });
-//     }
-//     res.json({ success: true, message: 'Vaccine appointment scheduled successfully' });
-//   });
-// });
 
 
 // ✅ Update Profile Picture
@@ -476,4 +366,25 @@ app.post('/api/search/veterinary', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
+
+
+  const SELF_URL = "https://petcare-backend-fu30.onrender.com";
+  setInterval(() => {
+    fetch(SELF_URL)
+      .then(res => console.log(`[${new Date().toISOString()}] Pinged self: ${res.status}`))
+      .catch(err => console.error(`[${new Date().toISOString()}] Ping failed: ${err.message}`));
+  }, 14 * 60 * 1000);
 });
+
+
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log("Server running...");
+  
+  // const SELF_URL = "https://your-render-app.onrender.com";
+  // setInterval(() => {
+  //   fetch(SELF_URL)
+  //     .then(res => console.log(`[${new Date().toISOString()}] Pinged self: ${res.status}`))
+  //     .catch(err => console.error(`[${new Date().toISOString()}] Ping failed: ${err.message}`));
+  // }, 14 * 60 * 1000);
+// });
+
