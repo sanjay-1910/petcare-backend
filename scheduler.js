@@ -166,7 +166,7 @@ function sendVaccineReminders() {
 }
 
 // Function to calculate delay until 8 AM next day
-function getDelayUntil(hour = 19) {
+function getDelayUntil(hour = 8) {
   const now = moment();
   let nextRun = moment().hour(hour).minute(0).second(0);
   if (now.isAfter(nextRun)) {
