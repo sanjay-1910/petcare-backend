@@ -38,8 +38,8 @@ app.use(cors({
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, "public")));
-// app.use("/uploads", express.static("uploads"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static("uploads"));
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
