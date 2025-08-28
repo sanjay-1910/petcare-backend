@@ -36,7 +36,4 @@ It connects the frontend to a secure **AWS RDS MySQL database** and provides API
 - **Sequelize / MySQL2** – Database ORM/connector (if used)  
 - **AWS** – Cloud infrastructure (EC2 for hosting backend, RDS for database)  
 
----
 
-   git clone https://github.com/your-username/petcare-backend.git
-   cd petcare-backend
