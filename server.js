@@ -23,18 +23,41 @@ app.get('/', (req, res) => {
 });
 
 require('./scheduler');
-app.use(cors({
-  origin: [
-    "http://localhost:5500",
+
+const allowedOrigins = [
+  "http://localhost:5500",
     "https://petcare-frontend-psi.vercel.app",
     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
     "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app",
     "https://petcare-frontend-pynala-sanjays-projects.vercel.app",
     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
     "https://petcare-frontend-bu6932vxa-pynala-sanjays-projects.vercel.app"
-  ],
-  credentials: false
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow requests like Postman
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error("Not allowed by CORS"), false);
+    }
+    return callback(null, true);
+  },
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  credentials: true
 }));
+
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5500",
+//     "https://petcare-frontend-psi.vercel.app",
+//     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
+//     "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app",
+//     "https://petcare-frontend-pynala-sanjays-projects.vercel.app",
+//     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
+//     "https://petcare-frontend-bu6932vxa-pynala-sanjays-projects.vercel.app"
+//   ],
+//   credentials: false
+// }));
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
