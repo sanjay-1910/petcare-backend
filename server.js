@@ -53,18 +53,49 @@ app.use("/uploads", express.static("uploads"));
 // });
 
 
-const db = await mysql.createConnection({
-  host: process.env.DB_HOST,
-  port: 12240,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: { 
-    // rejectUnauthorized: false
-    ca: fs.readFileSync('ca.pem')
-   } // Aiven requires SSL
-});
+// const db = await mysql.createConnection({
+//   host: process.env.DB_HOST,
+//   port: 12240,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   ssl: { 
+//     // rejectUnauthorized: false
+//     ca: fs.readFileSync('ca.pem')
+//    } // Aiven requires SSL
+// });
 
+
+
+async function initDB() {
+  try {
+    const db = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      port: 12240,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      ssl: { 
+        ca: fs.readFileSync('ca.pem')  // Aiven requires SSL
+      }
+    });
+
+    console.log("Database connected successfully!");
+
+    // You can start your server here after DB is ready
+    // app.listen(5002, () => {
+    //   console.log("Server running on http://localhost:5002");
+    // });
+
+    return db;
+  } catch (err) {
+    console.error("Error connecting to database:", err);
+    process.exit(1); // Stop if DB connection fails
+  }
+}
+
+// Call the function to initialize DB and server
+initDB();
 
 
 
