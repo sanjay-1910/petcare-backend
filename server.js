@@ -43,21 +43,10 @@ app.use(cors({
     return callback(null, true);
   },
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  credentials: false
+  credentials: true
 }));
 
-// app.use(cors({
-//   origin: [
-//     "http://localhost:5500",
-//     "https://petcare-frontend-psi.vercel.app",
-//     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
-//     "https://petcare-frontend-b5lxrjwzx-pynala-sanjays-projects.vercel.app",
-//     "https://petcare-frontend-pynala-sanjays-projects.vercel.app",
-//     "https://petcare-frontend-git-main-pynala-sanjays-projects.vercel.app",
-//     "https://petcare-frontend-bu6932vxa-pynala-sanjays-projects.vercel.app"
-//   ],
-//   credentials: false
-// }));
+
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
@@ -65,30 +54,22 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("uploads"));
 
-// const db = mysql.createPool({
-//   host: process.env.DB_HOST,
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-//   waitForConnections: true,
-//   connectionLimit: 5,
-//   queueLimit: 0,
-// });
 
 
-// const db = await mysql.createConnection({
-//   host: process.env.DB_HOST,
-//   port: 12240,
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-//   ssl: { 
-//     // rejectUnauthorized: false
-//     ca: fs.readFileSync('ca.pem')
-//    } // Aiven requires SSL
-// });
+// async function initDB() {
+//   const db = await mysql.createConnection({
+//     host: process.env.DB_HOST,
+//     port: 12240,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+//     ssl: { ca: fs.readFileSync('ca.pem') }
+//   });
+//   return db;
+// }
 
-
+// // Later in your route
+// const db = await initDB();
 
 async function initDB() {
   try {
