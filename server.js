@@ -41,15 +41,28 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("uploads"));
 
-const db = mysql.createPool({
+// const db = mysql.createPool({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   waitForConnections: true,
+//   connectionLimit: 5,
+//   queueLimit: 0,
+// });
+
+
+const db = mysql.createConnection({
   host: process.env.DB_HOST,
+  port: 12240,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  ssl: { rejectUnauthorized: true } // Aiven requires SSL
 });
+
+
+
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -61,6 +74,7 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
 
 // DB Keep-alive ping
 setInterval(async () => {
