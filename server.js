@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 // const fetch = require("node-fetch");
 
-
+let db;
 const app = express();
 const port = 5002;
 const storage = multer.memoryStorage();
@@ -43,7 +43,7 @@ app.use(cors({
     return callback(null, true);
   },
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  credentials: true
+  credentials: false
 }));
 
 
@@ -73,7 +73,7 @@ app.use("/uploads", express.static("uploads"));
 
 async function initDB() {
   try {
-    const db = await mysql.createConnection({
+    db = await mysql.createConnection({
       host: process.env.DB_HOST,
       port: 12240,
       user: process.env.DB_USER,
@@ -91,7 +91,7 @@ async function initDB() {
     //   console.log("Server running on http://localhost:5002");
     // });
 
-    return db;
+    // return db;
   } catch (err) {
     console.error("Error connecting to database:", err);
     process.exit(1); // Stop if DB connection fails
@@ -417,17 +417,43 @@ app.post('/api/search/veterinary', async (req, res) => {
   }
 });
 
+// initDB();
 
-app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+// app.listen(port, () => {
+//   console.log(`🚀 Server running on http://localhost:${port}`);
 
 
-  const SELF_URL = "https://petcare-backend-fu30.onrender.com";
-  setInterval(() => {
-    fetch(SELF_URL)
-      .then(res => console.log(`[${new Date().toISOString()}] Pinged self: ${res.status}`))
-      .catch(err => console.error(`[${new Date().toISOString()}] Ping failed: ${err.message}`));
-  }, 14 * 60 * 1000);
+//   const SELF_URL = "https://petcare-backend-fu30.onrender.com";
+//   setInterval(() => {
+//     fetch(SELF_URL)
+//       .then(res => console.log(`[${new Date().toISOString()}] Pinged self: ${res.status}`))
+//       .catch(err => console.error(`[${new Date().toISOString()}] Ping failed: ${err.message}`));
+//   }, 14 * 60 * 1000);
+// });
+
+
+initDB().then(() => {
+  app.listen(port, () => {
+    console.log(`🚀 Server running on http://localhost:${port}`);
+
+    // Keep-alive ping your own backend
+    const SELF_URL = "https://petcare-backend-fu30.onrender.com";
+    setInterval(() => {
+      fetch(SELF_URL)
+        .then(res => console.log(`[${new Date().toISOString()}] Pinged self: ${res.status}`))
+        .catch(err => console.error(`[${new Date().toISOString()}] Ping failed: ${err.message}`));
+    }, 14 * 60 * 1000);
+
+    // DB keep-alive ping
+    setInterval(async () => {
+      try {
+        await db.query('SELECT 1');
+        console.log('✅ DB keep-alive ping successful');
+      } catch (err) {
+        console.error('❌ DB keep-alive ping failed:', err.message);
+      }
+    }, 5 * 60 * 1000);
+  });
 });
 
 
