@@ -52,13 +52,16 @@ app.use("/uploads", express.static("uploads"));
 // });
 
 
-const db = mysql.createConnection({
+const db = await mysql.createConnection({
   host: process.env.DB_HOST,
   port: 12240,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  ssl: { rejectUnauthorized: true } // Aiven requires SSL
+  ssl: { 
+    // rejectUnauthorized: false
+    ca: fs.readFileSync('ca.pem')
+   } // Aiven requires SSL
 });
 
 
